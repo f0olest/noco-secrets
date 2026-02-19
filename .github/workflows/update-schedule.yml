@@ -10,17 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - run: node scripts/fetchSchedule.js
+      - name: Fetch schedule from NocoDB
+        run: node scripts/fetchSchedule.js
         env:
           NOCODB_TOKEN: ${{ secrets.NOCODB_TOKEN }}
 
-      - run: |
+      - name: Commit updated schedule
+        run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add schedule.json

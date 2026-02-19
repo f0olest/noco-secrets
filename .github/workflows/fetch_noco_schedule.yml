@@ -1,0 +1,28 @@
+name: Fetch NocoDB Schedule
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-schedule:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Fetch schedule from NocoDB
+        run: |
+          echo "Fetching NocoDB schedule..."
+          curl -s -H "xc-token: k3znbu0IMNOG_WZZ2RVYVbfWEM8dVpVWM5z6KoBK" \
+            "http://80.93.61.249:8080/api/v2/tables/m0al196jd3i81ph/records?viewId=vwkiqr9k80063ocj&limit=100" \
+            > schedule.json
+          echo "Fetched $(jq '.list | length' schedule.json) records."
+
+      - name: Commit and push schedule
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add schedule.json
+          git commit -m "Update NocoDB schedule [skip ci]" || echo "No changes to commit"
+          git push
